@@ -10,10 +10,12 @@ from keras.optimizers import Adam
 from keras.metrics import categorical_crossentropy
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers.normalization import BatchNormalization
+from keras.preprocessing.image import img_to_array
 from keras.layers.convolutional import *
 from keras.models import load_model
 import itertools
 from PIL import Image
+import os
 
 batch_size = 128
 num_classes = 7
@@ -23,13 +25,24 @@ epochs = 20
 
 img_rows, img_cols = 224, 224
 
-train_path = './face'
+train_path = './face/database'
 #valid_path = './Case/test_val'
 #test_path = './Case/test_test'
 
-train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(224,224),classes=['1', '2','3','4','5','6','7'], batch_size=16)
-#valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size=(224,224), classes=['boy', 'girl','cat','bird','dog','bear','rab'], batch_size=128)
-#test_batches = ImageDataGenerator().flow_from_directory(test_path, target_size=(224,224), classes=['boy', 'girl','cat','bird','dog','bear','rab'], batch_size=128)
+for imgname in os.listdir(train_path):
+
+    print(imgname)
+    img = Image.open(train_path+imgname)
+    arr = np.asarray(img, dtype= np.float32)
+
+    print(img.size,arr.shape)
+
+    arr = img_to_array(img)
+
+    print(img.size, arr,shape)
+
+#train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(224,224),classes=['1', '2','3','4','5','6','7'], batch_size=16)
+
 
 #vgg16_model = keras.applications.vgg16.VGG16()
 
