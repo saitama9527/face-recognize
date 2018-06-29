@@ -17,9 +17,6 @@ import itertools
 from PIL import Image
 import os
 
-batch_size = 128
-num_classes = 7
-
 
 epochs = 20
 
@@ -29,8 +26,8 @@ train_path = './face/database/train'
 valid_path = './face/database/val'
 #test_path = './Case/test_test'
 
-train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(220,110), batch_size=16)
-valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size=(220,110), batch_size=16)
+train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(110,220), batch_size=64)
+valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size=(110,220), batch_size=64)
 
 
 #vgg16_model = keras.applications.vgg16.VGG16()
@@ -55,7 +52,7 @@ model.add(Convolution2D(
                         nb_row = 5,
                         nb_col = 5,
                         border_mode = 'same',
-                        input_shape=(220,110,3)
+                        input_shape=(110,220,3)
                         )
           )
 model.add(Activation('relu'))
@@ -78,7 +75,7 @@ model.add(Flatten())
 model.add(Dense(1024))
 model.add(Activation('relu'))
 
-model.add(Dense(5))
+model.add(Dense(50))
 model.add(Activation('softmax'))
 
 
@@ -88,6 +85,6 @@ model.compile(optimizer=Adam(lr=0.00001),
               metrics=['accuracy'])
 
 #model.compile(Adam(lr=0.00001), loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit_generator(train_batches, validation_data=valid_batches, epochs=10, verbose=2)
+model.fit_generator(train_batches, validation_data=valid_batches, epochs=10, verbose=1)
 
-#model.save("line_test_1.h5")
+model.save("face_test_1.h5")
