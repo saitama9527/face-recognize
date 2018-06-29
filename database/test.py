@@ -113,7 +113,7 @@ model.compile(optimizer=adam,
 
 print('Training ------------')
 # Another way to train the model
-model.fit(X_train, y_train, epochs=30, batch_size=64,)
+model.fit(X_train, y_train, epochs=50, batch_size=16,)
 
 print('\nTesting ------------')
 # Evaluate the model with the metrics we defined earlier
