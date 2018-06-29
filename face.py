@@ -17,17 +17,26 @@ import itertools
 from PIL import Image
 import os
 
+batch_size = 10
+nb_classes = 40
+nb_epoch = 12
+# input image dimensions
+# number of convolutional filters to use
+nb_filters = 32
+# size of pooling area for max pooling
+nb_pool = 2
+# convolution kernel size
+nb_conv = 3
+
 
 epochs = 20
-
-img_rows, img_cols = 224, 224
-
-train_path = './face/database/train'
-valid_path = './face/database/val'
+row,col=64,128
+train_path = './data/train'
+valid_path = './data/valid'
 #test_path = './Case/test_test'
 
-train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(110,220), batch_size=64)
-valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size=(110,220), batch_size=64)
+train_batches = ImageDataGenerator().flow_from_directory(train_path, target_size=(row,col), batch_size=16)
+valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size=(row,col), batch_size=16)
 
 
 #vgg16_model = keras.applications.vgg16.VGG16()
@@ -47,40 +56,21 @@ valid_batches = ImageDataGenerator().flow_from_directory(valid_path, target_size
 #model.add(Dense(7, activation='softmax'))
 
 model = Sequential()
-model.add(Convolution2D(
-                        nb_filter = 64,
-                        nb_row = 5,
-                        nb_col = 5,
-                        border_mode = 'same',
-                        input_shape=(110,220,3)
-                        )
-          )
+model.add(Convolution2D(nb_filters, nb_conv, nb_conv,border_mode='valid',input_shape=(row,col,3)))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-
-model.add(MaxPooling2D(
-                       pool_size = (2,2),
-                       strides = (2,2),
-                       border_mode = 'same',
-                       )
-          )
-
-model.add(Convolution2D(128, 5, 5, border_mode = 'same'))
+model.add(Convolution2D(nb_filters, nb_conv, nb_conv))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-
-model.add(MaxPooling2D(2, 2, border_mode = 'same'))
-
+model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
+model.add(Dropout(0.25))
 model.add(Flatten())
-model.add(Dense(1024))
+model.add(Dense(128))
 model.add(Activation('relu'))
-
+model.add(Dropout(0.5))
 model.add(Dense(50))
 model.add(Activation('softmax'))
 
-
 ########################
-model.compile(optimizer=Adam(lr=0.00001),
+model.compile(optimizer=Adam(lr=0.001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
