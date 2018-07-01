@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 26 01:10:22 2018
-
-@author: s7856
-"""
-
 from PIL import Image
 import numpy
 import os,glob
@@ -17,8 +10,13 @@ from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 from keras.optimizers import Adam
 
+drow=168
+dcol=120
+
 fs="s01_01.jpg"
-face_data = numpy.empty((50*13,220,110))
+face_data = numpy.empty((50*13,drow,dcol))
+
+
 
 for row in range(50):
     for col in range(13):
@@ -31,16 +29,16 @@ for row in range(50):
         fs=fs[:1]+'{:0>2d}'.format(p)+fs[3]+'{:0>2d}'.format(n)+fs[6:]
         print (fs)
         img = Image.open(fs)
-        img = img.resize((110, 220), Image.BILINEAR)
+        img = img.resize((dcol, drow), Image.BILINEAR)
         img = img.convert('L')
         img_ndarray = numpy.asarray(img, dtype='float64')/ 255
         face_data[row*13+col] =img_ndarray
-        
+
 X = face_data
 print (X.shape)
 face_label = numpy.empty(650)
 for i in range(650):
-  face_label[i]= int(i/13)
+    face_label[i]= int(i/13)
 y = face_label
 print (y.shape)
 
@@ -52,8 +50,8 @@ print (y_test.shape)
 
 print("Changing format......")
 
-X_train = X_train.reshape(-1, 1,110, 220)/255.
-X_test = X_test.reshape(-1, 1,110, 220)/255.
+X_train = X_train.reshape(-1, 1,dcol, drow)/255.
+X_test = X_test.reshape(-1, 1,dcol, drow)/255.
 y_train = np_utils.to_categorical(y_train, num_classes=50)
 y_test = np_utils.to_categorical(y_test, num_classes=50)
 
@@ -72,7 +70,7 @@ model.add(Convolution2D(
                         nb_row = 5,
                         nb_col = 5,
                         border_mode = 'same',
-                        input_shape=(1,110,220)
+                        input_shape=(1,dcol,drow)
                         )
           )
 model.add(Activation('relu'))
@@ -123,4 +121,5 @@ print('\ntest loss: ', loss)
 print('\ntest accuracy: ', accuracy)
 
 model.save('cnn_model.h5')   # HDF5文件，pip install h5py
-print('\nSuccessfully saved as cnn_model.h5')
+print('\nSuccessfully saved as cnn_model_1.h5')# -*- coding: utf-8 -*-
+

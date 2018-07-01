@@ -15,17 +15,17 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
 
-fs="s01_01.jpg"
+fs='/face/database/s01_01.jpg'
 face_data = numpy.empty((50*15,220,110))
 
 for row in range(50):
     for col in range(15):
         p=row+1
         n=col+1
-        fs=fs[:1]+'{:0>2d}'.format(p)+fs[3]+'{:0>2d}'.format(n)+fs[6:]
-        print (fs)
+        fs=fs[:16]+'{:0>2d}'.format(p)+fs[18]+'{:0>2d}'.format(n)+fs[21:]
+    #print (fs)
         img = Image.open(fs)
-        img = img.resize((110, 220), Image.BILINEAR)
+        img = img.resize( (110, 220), Image.BILINEAR )
         img = img.convert('L')
         img_ndarray = numpy.asarray(img, dtype='float64')/ 255
         face_data[row*15+col] =img_ndarray
