@@ -14,7 +14,7 @@ drow=168
 dcol=120
 
 fs="s01_01.jpg"
-face_data = numpy.empty((50*13,drow,dcol))
+face_data = numpy.empty((50*13,drow,dcol,3))
 
 
 
@@ -30,7 +30,6 @@ for row in range(50):
         print (fs)
         img = Image.open(fs)
         img = img.resize((dcol, drow), Image.BILINEAR)
-        img = img.convert('L')
         img_ndarray = numpy.asarray(img, dtype='float64')/ 255
         face_data[row*13+col] =img_ndarray
 
@@ -50,8 +49,8 @@ print (y_test.shape)
 
 print("Changing format......")
 
-X_train = X_train.reshape(-1, 1,dcol, drow)/255.
-X_test = X_test.reshape(-1, 1,dcol, drow)/255.
+X_train = X_train.reshape(-1, 3,dcol, drow)
+X_test = X_test.reshape(-1, 3,dcol, drow)
 y_train = np_utils.to_categorical(y_train, num_classes=50)
 y_test = np_utils.to_categorical(y_test, num_classes=50)
 
@@ -64,62 +63,35 @@ print("Changing succeeded!")
 os.system("pause")
 
 model = Sequential()
-#conv layer 1 as follows
-model.add(Convolution2D(
-                        nb_filter = 64,
-                        nb_row = 5,
-                        nb_col = 5,
-                        border_mode = 'same',
-                        input_shape=(1,dcol,drow)
-                        )
-          )
+model.add(Convolution2D(nb_filter = 64,nb_row = 5,nb_col = 5,border_mode = 'same',input_shape=(3,dcol,drow)))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-
-#pooling layer 1 as follows
-model.add(MaxPooling2D(
-                       pool_size = (2,2),
-                       strides = (2,2),
-                       border_mode = 'same',
-                       )
-          )
-
-#conv layer 2 as follows
+model.add(MaxPooling2D(pool_size = (2,2),strides = (2,2),border_mode = 'same',))
 model.add(Convolution2D(128, 5, 5, border_mode = 'same'))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-
-#pooling layer 2 as follows
 model.add(MaxPooling2D(2, 2, border_mode = 'same'))
-
-########################
 model.add(Flatten())
 model.add(Dense(1024))
 model.add(Activation('relu'))
 
-########################
+
 model.add(Dense(50))
 model.add(Activation('softmax'))
 
-########################
 adam = Adam(lr = 1e-4)
 
-########################
 model.compile(optimizer=adam,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 print('Training ------------')
-# Another way to train the model
-model.fit(X_train, y_train, epochs=50, batch_size=16,)
+model.fit(X_train, y_train, epochs=30, batch_size=32,)
 
 print('\nTesting ------------')
-# Evaluate the model with the metrics we defined earlier
 loss, accuracy = model.evaluate(X_test, y_test)
 
 print('\ntest loss: ', loss)
 print('\ntest accuracy: ', accuracy)
 
-model.save('cnn_model.h5')   # HDF5文件，pip install h5py
-print('\nSuccessfully saved as cnn_model_1.h5')# -*- coding: utf-8 -*-
+model.save('cnn_model.h5')
+print('\nSuccessfully saved as cnn_model_1.h5')
 
